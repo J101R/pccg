@@ -3,6 +3,7 @@ pub mod cliargs;
 use std::process::{Command, ExitCode};
 use anyhow::{Context, Ok, Result, bail};
 use clap::Parser;
+use nix::unistd::geteuid;
 
 use crate::cliargs::CliArgs;
 
@@ -38,6 +39,11 @@ fn git_output(args: &[&str]) -> Result<String> {
 }
 
 fn main() -> Result<ExitCode> {
+	if geteuid().is_root() {
+		eprintln!("pccg should never be ran as root!");
+		return Ok(ExitCode::FAILURE);
+	}
+
     ensure_git_repo()?;
 
     let cli = CliArgs::parse();
