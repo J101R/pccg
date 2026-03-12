@@ -1,0 +1,28 @@
+[package]
+name = "pccg"
+version = "0.0.1"
+description = "Generate an AI-ready prompt from staged git changes to create Conventional Commit messages."
+license="GPL-3.0-or-later"
+edition = "2024"
+readme = "README.md"
+repository = "https://github.com/J101R/pccg"
+
+keywords = [
+    "git",
+    "conventional-commits",
+    "ai",
+    "llm",
+    "cli"
+]
+
+categories = [
+    "command-line-utilities",
+    "development-tools"
+]
+
+[dependencies]
+clap = { version = "4.5.60",      default-features = false, features = ["help", "std", "derive"] }
+anyhow = { version = "1.0.102",   default-features = false, features = ["std", "backtrace"] }
+
+[profile.release]
+lto = "thin"
