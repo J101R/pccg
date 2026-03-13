@@ -1,4 +1,4 @@
-# Portable-Conventional-Commit-Generator
+# Portable Conventional Commit Generator
 
 **Generate AI-ready prompts from staged Git changes.**
 

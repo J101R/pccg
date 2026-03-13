@@ -1,8 +1,9 @@
 pub mod cliargs;
 
-use std::process::{Command, ExitCode};
+use std::{process::{Command, ExitCode}, sync::Arc};
 use anyhow::{Context, Ok, Result, bail};
 use clap::Parser;
+use minijinja::{Environment, Value, value::Object};
 use nix::unistd::geteuid;
 
 use crate::cliargs::CliArgs;
@@ -16,7 +17,7 @@ fn ensure_git_repo() -> Result<()> {
         .context("Failed to execute git to check repository")?;
 
     if !output.status.success() {
-        bail!("Not inside a git repository: git command failed");
+        bail!("Not inside a git repository: (git command failed)");
     }
 
     let binding = String::from_utf8_lossy(&output.stdout);
@@ -38,9 +39,27 @@ fn git_output(args: &[&str]) -> Result<String> {
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
+#[derive(Debug)]
+pub struct BasicContext {
+    context: Option<String>,
+    status: String,
+    diff: String,
+}
+
+impl Object for BasicContext {
+    fn get_value(self: &Arc<Self>, field: &Value) -> Option<Value> {
+        match field.as_str()? {
+            "context" => Some(Value::from(self.context.clone())),
+            "status" => Some(Value::from(self.status.clone())),
+            "diff" => Some(Value::from(self.diff.clone())),
+            _ => None
+        }
+    }
+}
+
 fn main() -> Result<ExitCode> {
 	if geteuid().is_root() {
-		eprintln!("pccg should never be ran as root!");
+		eprintln!("Do not run pccg as root");
 		return Ok(ExitCode::FAILURE);
 	}
 
@@ -55,21 +74,19 @@ fn main() -> Result<ExitCode> {
         .context("Failed to read staged diff")?;
 
     if status.is_empty() || diff.is_empty() {
-        eprintln!("No staged changes detected.");
+        eprintln!("No staged changes detected");
         return Ok(ExitCode::FAILURE);
     }
 
-    let user_context = cli
-        .context
-        .as_deref()
-        .map(|c| format!("\nOptional Context From User:\n{}\n", c))
-        .unwrap_or_default();
-
-    let prompt = BASIC_PROMPT
-    .to_string()
-    .replace("{context}", &user_context)
-    .replace("{status}", &status)
-    .replace("{diff}", &diff);
+    let mut env = Environment::new();
+    env.add_template("basic", BASIC_PROMPT)?;
+    let tmpl = env.get_template("basic")?;
+    let ctx = Value::from_object(BasicContext {
+        context: cli.context,
+        status: status,
+        diff: diff
+    });
+    let prompt = tmpl.render(ctx)?;
     print!("{prompt}");
     Ok(ExitCode::SUCCESS)
 }
