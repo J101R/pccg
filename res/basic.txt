@@ -36,8 +36,10 @@ Rules:
 {context}
 Git Status Output:
 {status}
+
 Raw Git Diff (usually from `git diff --staged`):
 {diff}
+
 ### ANALYSIS PROCESS
 
 1. Categorize files as added, modified, or deleted.

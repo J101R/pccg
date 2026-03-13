@@ -35,7 +35,7 @@ fn git_output(args: &[&str]) -> Result<String> {
         .output()
         .context("Failed to execute git command")?;
 
-    Ok(String::from_utf8_lossy(&output.stdout).into_owned())
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
 fn main() -> Result<ExitCode> {
