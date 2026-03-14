@@ -1,14 +1,14 @@
-pub mod cliargs;
+pub mod cli_args;
+pub mod basic_context;
+pub mod prompts;
 
-use std::{process::{Command, ExitCode}, sync::Arc};
+use std::{io::stdout, process::{Command, ExitCode}};
 use anyhow::{Context, Ok, Result, bail};
 use clap::Parser;
-use minijinja::{Environment, Value, value::Object};
+use minijinja::{Environment, Value};
 use nix::unistd::geteuid;
 
-use crate::cliargs::CliArgs;
-
-const BASIC_PROMPT: &str = include_str!("../res/basic.txt");
+use crate::{basic_context::BasicContext, cli_args::CliArgs};
 
 fn ensure_git_repo() -> Result<()> {
     let output = Command::new("git")
@@ -39,24 +39,6 @@ fn git_output(args: &[&str]) -> Result<String> {
     Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 
-#[derive(Debug)]
-pub struct BasicContext {
-    context: Option<String>,
-    status: String,
-    diff: String,
-}
-
-impl Object for BasicContext {
-    fn get_value(self: &Arc<Self>, field: &Value) -> Option<Value> {
-        match field.as_str()? {
-            "context" => Some(Value::from(self.context.clone())),
-            "status" => Some(Value::from(self.status.clone())),
-            "diff" => Some(Value::from(self.diff.clone())),
-            _ => None
-        }
-    }
-}
-
 fn main() -> Result<ExitCode> {
 	if geteuid().is_root() {
 		eprintln!("Do not run pccg as root");
@@ -79,14 +61,16 @@ fn main() -> Result<ExitCode> {
     }
 
     let mut env = Environment::new();
-    env.add_template("basic", BASIC_PROMPT)?;
-    let tmpl = env.get_template("basic")?;
+    env.add_template("basic", prompts::BASIC_PROMPT)
+        .context("Syntax error in basic prompt template")?;
+    let tmpl = env.get_template("basic")
+        .context("Failed to get basic template from the environment")?;
     let ctx = Value::from_object(BasicContext {
         context: cli.context,
         status: status,
         diff: diff
     });
-    let prompt = tmpl.render(ctx)?;
-    print!("{prompt}");
+    tmpl.render_to_write(ctx, &mut stdout())
+        .context("Failed to parse prompt")?;
     Ok(ExitCode::SUCCESS)
 }
