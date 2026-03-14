@@ -109,18 +109,28 @@ M  src/middleware/auth.js
 M  src/routes/api.js
 
 Raw Git Diff (usually from `git diff --staged`):
-
 diff --git a/src/middleware/auth.js b/src/middleware/auth.js
-+ export function requireAuth(req, res, next) {
-+   if (!req.user) {
-+     return res.status(401).json({ error: "Unauthorized" });
-+   }
-+   next();
-+ }
+index 3a1f2c4..7b9e5d1 100644
+--- a/src/middleware/auth.js
++++ b/src/middleware/auth.js
+@@ -0,0 +1,6 @@
++export function requireAuth(req, res, next) {
++  if (!req.user) {
++    return res.status(401).json({ error: "Unauthorized" });
++  }
++  next();
++}
 
 diff --git a/src/routes/api.js b/src/routes/api.js
-+ import { requireAuth } from "../middleware/auth.js"
-+ router.get("/profile", requireAuth, getProfile)
+index 8c2a1d3..4f7b9e0 100644
+--- a/src/routes/api.js
++++ b/src/routes/api.js
+@@ -5,3 +5,5 @@
+ import express from "express";
+ const router = express.Router();
+
++import { requireAuth } from "../middleware/auth.js";
++router.get("/profile", requireAuth, getProfile);
 
 # OUTPUT EXAMPLE
 
