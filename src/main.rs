@@ -40,10 +40,12 @@ fn git_output(args: &[&str]) -> Result<String> {
 }
 
 fn main() -> Result<ExitCode> {
-	if geteuid().is_root() {
-		eprintln!("Do not run pccg as root");
-		return Ok(ExitCode::FAILURE);
-	}
+    if cfg!(unix) {
+        if geteuid().is_root() {
+            eprintln!("Do not run pccg as root");
+            return Ok(ExitCode::FAILURE);
+        }
+    }
 
     ensure_git_repo()?;
 
