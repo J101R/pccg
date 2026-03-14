@@ -21,7 +21,7 @@ categories = [
 ]
 
 [dependencies]
-clap = { version = "4.5.60",      default-features = false, features = ["help", "std", "derive"] }
+clap = { version = "4.6.0",       default-features = false, features = ["help", "std", "derive"] }
 anyhow = { version = "1.0.102",   default-features = false, features = ["std", "backtrace"] }
 minijinja = { version = "2.17.1", default-features = false, features = ["serde"] }
 serde = { version = "1.0.228",    default-features = false, features = ["std"] }
