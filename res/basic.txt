@@ -86,13 +86,15 @@ After each user response, continue analysis and, if needed, ask additional quest
 Return ONLY the commit message.
 
 <type>(scope): short summary
-
+{% if style == "bullets" %}
 - summarize major change
 - summarize additional change
 - include important implementation details if relevant
 
-• Use 2-6 bullet points, concise and focused.
-• A short paragraph may optionally be used instead of bullets.
+• Use 2-6 bullet points, concise and focused.{% else %}
+Short paragraph describing the changes and important implementation details.
+
+• Use a concise paragraph (2–4 sentences).{% endif %}
 • Keep summary under 72 characters.
 • Use imperative mood.
 • Do not end the summary with a period.
@@ -137,11 +139,14 @@ index 8c2a1d3..4f7b9e0 100644
 # OUTPUT EXAMPLE
 
 feat(auth)!: add authentication middleware for protected routes
-
+{% if style == "bullets" %}
 - add requireAuth middleware to validate authenticated users
 - integrate middleware with profile API route
 - return 401 response when user is not authenticated
-
+{% else %}
+Added a new `requireAuth` middleware that validates whether a user is authenticated before accessing protected routes.
+Integrated this middleware with the profile API route and updated responses to return 401 when a user is not authorized.
+{% endif %}
 BREAKING CHANGE: authentication token format changed; existing clients must update.
 
 # QUESTIONS EXAMPLE

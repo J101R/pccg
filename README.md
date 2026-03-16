@@ -8,6 +8,9 @@
 
 * Detects staged Git changes automatically.
 * Optionally includes user-provided context.
+* Supports multiple commit body styles:
+  * **description** – a short paragraph describing the changes.
+  * **bullets** – a concise bullet list summarizing major changes.
 * Outputs a structured prompt ready for AI-assisted commit message generation.
 
 ## Installation
@@ -47,6 +50,10 @@ pccg > $HOME/Downloads/commit.txt
 
 # Include extra context
 pccg --context "Refactored parser to improve error handling" > $HOME/Downloads/commit.txt
+
+# Choose body style (default is bullets)
+pccg --style description > $HOME/Downloads/commit.txt
+pccg --style bullets > $HOME/Downloads/commit.txt
 ```
 
 If there are no staged changes, the tool will print:

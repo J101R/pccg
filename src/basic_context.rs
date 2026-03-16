@@ -3,9 +3,10 @@ use minijinja::{Value, value::Object};
 
 #[derive(Debug)]
 pub struct BasicContext {
-    pub(crate) context: Option<String>,
-    pub(crate) status: String,
-    pub(crate) diff: String,
+    pub context: Option<String>,
+    pub status: String,
+    pub diff: String,
+    pub style: String
 }
 
 impl Object for BasicContext {
@@ -14,6 +15,7 @@ impl Object for BasicContext {
             "context" => Some(Value::from(self.context.clone())),
             "status" => Some(Value::from(self.status.clone())),
             "diff" => Some(Value::from(self.diff.clone())),
+            "style" => Some(Value::from(self.style.clone())),
             _ => None
         }
     }
