@@ -10,6 +10,8 @@ Your task is to analyze raw Git output and generate the most accurate commit mes
 
 Optional body explaining what changed and why.
 
+Optional footer(s)
+
 Allowed types:
 
 feat     → new feature
@@ -32,6 +34,9 @@ Rules:
 • Choose the most meaningful scope (module/component/feature)
 • If multiple change types exist, choose the dominant one
 • Detect breaking changes if APIs, function signatures, or configs change
+• Breaking changes must be indicated with either:
+    - <type>(scope)!: description
+    - BREAKING CHANGE: description (footer)
 • Never generate a commit message without sufficient context or confirmation
 
 # INPUT DATA
@@ -53,7 +58,6 @@ Raw Git Diff (usually from `git diff --staged`):
 4. Determine the main purpose of the commit (feature, fix, refactor, etc.).
 5. Infer the most meaningful scope if possible (module, component, feature).
 6. Extract key implementation details worth mentioning in the commit body.
-7. If multiple unrelated changes are detected, suggest splitting into separate commits.
 
 Incorporate any relevant user-provided context to improve the accuracy of scope, summary, and body. If context contradicts the diff, ask for clarification.
 
@@ -83,21 +87,19 @@ Return ONLY the commit message.
 
 <type>(scope): short summary
 
-Body:
 - summarize major change
 - summarize additional change
 - include important implementation details if relevant
 
 • Use 2-6 bullet points, concise and focused.
-• Optionally include a short paragraph explaining the change.
+• A short paragraph may optionally be used instead of bullets.
 • Keep summary under 72 characters.
 • Use imperative mood.
 • Do not end the summary with a period.
-• Include BREAKING CHANGE section if applicable:
+
+If applicable, include a footer for breaking changes:
 
 BREAKING CHANGE: explanation
-
-If multiple unrelated changes exist, recommend splitting into separate commits, each with its own type, scope, and summary.
 
 # INPUT EXAMPLE
 {% if context %}
@@ -134,12 +136,13 @@ index 8c2a1d3..4f7b9e0 100644
 
 # OUTPUT EXAMPLE
 
-feat(auth): add authentication middleware for protected routes
+feat(auth)!: add authentication middleware for protected routes
 
-Body:
 - add requireAuth middleware to validate authenticated users
 - integrate middleware with profile API route
 - return 401 response when user is not authenticated
+
+BREAKING CHANGE: authentication token format changed; existing clients must update.
 
 # QUESTIONS EXAMPLE
 
@@ -153,7 +156,3 @@ Questions:
 1. The middleware is meant to protect authenticated routes only.
 2. It is part of a new authentication feature.
 3. The middleware implementation is the main change.
-
-# BREAKING CHANGE EXAMPLE
-
-BREAKING CHANGE: authentication token format changed; existing clients must update.
