@@ -20,6 +20,10 @@ categories = [
     "development-tools"
 ]
 
+[[bin]]
+name = "pccg"
+path = "src/main.rs"
+
 [dependencies]
 clap = { version = "4.6.0",       default-features = false, features = ["help", "std", "derive"] }
 anyhow = { version = "1.0.102",   default-features = false, features = ["std", "backtrace"] }
