@@ -4,7 +4,7 @@ pub mod prompts;
 pub mod git;
 
 use std::{io::stdout, process::ExitCode};
-use anyhow::{Context, Ok, Result};
+use anyhow::{Context, Ok, Result, bail};
 use clap::Parser;
 use minijinja::{Environment, Value};
 use nix::unistd::geteuid;
@@ -14,8 +14,7 @@ use crate::{basic_context::BasicContext, cli_args::CliArgs};
 fn main() -> Result<ExitCode> {
     if cfg!(unix) {
         if geteuid().is_root() {
-            eprintln!("Do not run pccg as root");
-            return Ok(ExitCode::FAILURE);
+            bail!("Do not run pccg as root")
         }
     }
 
@@ -30,22 +29,19 @@ fn main() -> Result<ExitCode> {
         .context("Failed to read staged diff")?;
 
     if status.is_empty() || diff.is_empty() {
-        eprintln!("No staged changes detected");
-        return Ok(ExitCode::FAILURE);
+        bail!("No staged changes detected")
     }
 
-    let mut env = Environment::new();
-    env.add_template("basic", prompts::BASIC_PROMPT)
+    let env = Environment::new();
+    let tmpl = env.template_from_str(prompts::BASIC_PROMPT)
         .context("Syntax error in basic prompt template")?;
-    let tmpl = env.get_template("basic")
-        .context("Failed to get basic template from the environment")?;
     let ctx = Value::from_object(BasicContext {
         context: cli.context,
         status: status,
         diff: diff,
         style: cli.style.to_string(),
     });
-    tmpl.render_to_write(ctx, &mut stdout())
+    tmpl.render_captured_to(ctx, &mut stdout())
         .context("Failed to parse prompt")?;
     Ok(ExitCode::SUCCESS)
 }

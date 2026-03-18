@@ -1,7 +1,7 @@
 [package]
 name = "pccg"
 version = "0.0.1"
-description = "Generate an AI-ready prompt from staged git changes to create Conventional Commit messages."
+description = "Generate an AI-ready prompt from staged git changes to create Conventional Commit messages"
 license="GPL-3.0-or-later"
 edition = "2024"
 readme = "README.md"
@@ -27,7 +27,7 @@ path = "src/main.rs"
 [dependencies]
 clap = { version = "4.6.0",       default-features = false, features = ["help", "std", "derive"] }
 anyhow = { version = "1.0.102",   default-features = false, features = ["std", "backtrace"] }
-minijinja = { version = "2.17.1", default-features = false, features = ["serde"] }
+minijinja = { version = "2.18.0", default-features = false, features = ["serde"] }
 serde = { version = "1.0.228",    default-features = false, features = [] }
 [target.'cfg(unix)'.dependencies]
 nix = { version = "0.31.2",       default-features = false, features = ["user"] }

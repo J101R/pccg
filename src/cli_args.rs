@@ -41,7 +41,7 @@ bullets:
     pub style: BodyStyle
 }
 
-#[derive(Debug, Clone, Copy, ValueEnum, Default)]
+#[derive(Debug, Clone, ValueEnum, Default)]
 pub enum BodyStyle {
     #[value(name = "description")]
     Description,
