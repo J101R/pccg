@@ -9,7 +9,7 @@ use clap::Parser;
 use minijinja::{Environment, Value};
 use nix::unistd::geteuid;
 
-use crate::{basic_context::BasicContext, cli_args::CliArgs};
+use crate::{basic_context::BasicContext, cli_args::CliArgs, git::filter_status};
 
 fn main() -> Result<ExitCode> {
     if cfg!(unix) {
@@ -22,9 +22,9 @@ fn main() -> Result<ExitCode> {
 
     let cli = CliArgs::parse();
     
-    let status = git::git_output(&["status", "--porcelain"])
+    let mut status = git::git_output(&["status", "--porcelain"])
         .context("Failed to read git status")?;
-
+    status = filter_status(status);
     let diff = git::git_output(&["diff", "--staged"])
         .context("Failed to read staged diff")?;
 

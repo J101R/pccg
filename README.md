@@ -5,6 +5,8 @@ Portable Conventional Commit Generator
 
 `pccg` is a lightweight CLI tool that reads your staged Git changes (status and diff) and formats them into a prompt ready to paste into an AI chatbot (like ChatGPT or Claude) to generate Conventional Commit messages.
 
+## [Change log](CHANGELOG.md)
+
 ## Features
 
 * Detects staged Git changes automatically.
