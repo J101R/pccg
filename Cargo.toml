@@ -1,6 +1,6 @@
 [package]
 name = "pccg"
-version = "0.0.1"
+version = "0.0.2"
 description = "Generate an AI-ready prompt from staged git changes to create Conventional Commit messages"
 license="GPL-3.0-or-later"
 edition = "2024"
